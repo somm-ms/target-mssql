@@ -13,7 +13,21 @@ class mssqlConnector(SQLConnector):
 
     This class handles all DDL and type conversions.
     """
+    def create_sqlalchemy_engine(self) -> sqlalchemy.engine.Engine:
+        """Return a new SQLAlchemy engine using the provided config.
 
+        Developers can generally override just one of the following:
+        `sqlalchemy_engine`, sqlalchemy_url`.
+
+        Returns:
+            A newly created SQLAlchemy engine object.
+            overwritten to make sure fast_executemany is used when pyodbc is used and fast_executemany is checked as config option
+        """
+        if 'pyodbc' in self.sqlalchemy_url and self.config.get("fast_executemany"):
+            return sqlalchemy.create_engine(self.sqlalchemy_url, echo=False, fast_executemany=True)
+        else:
+            return sqlalchemy.create_engine(self.sqlalchemy_url, echo=False, fast_executemany=True)
+    
     allow_column_add: bool = True  # Whether ADD COLUMN is supported.
     allow_column_rename: bool = True  # Whether RENAME COLUMN is supported.
     allow_column_alter: bool = True  # Whether altering column types is supported.

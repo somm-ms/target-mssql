@@ -4,18 +4,22 @@ from __future__ import annotations
 
 import json
 import re
-from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Union
 
 import sqlalchemy
 from singer_sdk.connectors.sql import SQLConnector
 from singer_sdk.helpers._conformers import replace_leading_digit
 from singer_sdk.sinks.sql import SQLSink
 from sqlalchemy import Column
+from sqlalchemy.sql import Executable
 
 from target_mssql.connector import mssqlConnector
 
 if TYPE_CHECKING:
     from singer_sdk.plugin_base import PluginBase
+    
+from datetime import datetime
+from textwrap import dedent
 
 
 class mssqlSink(SQLSink):
@@ -86,6 +90,31 @@ class mssqlSink(SQLSink):
 
         return record
 
+    def generate_insert_statement(
+        self,
+        full_table_name: str,
+        schema: dict,) -> Union[str, Executable]:
+        """Generate an insert statement for the given records.
+
+        Args:
+            full_table_name: the target table name.
+            schema: the JSON schema for the new table.
+
+        Returns:
+            An insert statement.
+        """
+        property_names = list(self.conform_schema(schema)["properties"].keys())
+        statement = dedent(
+            f"""\
+            INSERT INTO {full_table_name}
+            ({", ".join(property_names)})
+            VALUES ({", ".join([f":{name}" for name in property_names])})
+            """
+        )
+        if self._config.get("fast_executemany"):
+            statement = """set language english;""" + statement
+        return statement.rstrip()
+
     def bulk_insert_records(
         self,
         full_table_name: str,
@@ -122,7 +151,16 @@ class mssqlSink(SQLSink):
         for record in records:
             insert_record = {}
             for column in columns:
-                insert_record[column.name] = record.get(column.name)
+                value = record.get(column.name)
+                
+                # Check if the value is a datetime object convert to english datetime string for fast_executemany
+                if self._config.get("fast_executemany") and isinstance(value, datetime):
+                    # Remove tzinfo by converting to a naive datetime
+                    value = value.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+
+                # Add the processed value to the insert_record
+                insert_record[column.name] = value
+
             insert_records.append(insert_record)
 
         self.connection.execute(insert_sql, insert_records)
@@ -131,6 +169,7 @@ class mssqlSink(SQLSink):
             return len(records)  # If list, we can quickly return record count.
 
         return None  # Unknown record count.
+
 
     def column_representation(
         self,

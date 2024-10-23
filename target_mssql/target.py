@@ -58,6 +58,12 @@ class Targetmssql(SQLTarget):
             description="Use float data type for numbers (otherwise number type is used)",
             default=False,
         ),
+        th.Property(
+            "fast_executemany",
+            th.BooleanType,
+            description="Use fast_executemany insert when using pyodbc for faster Inserts.",
+            default=False,
+        ),
     ).to_dict()
 
     default_sink_class = mssqlSink
