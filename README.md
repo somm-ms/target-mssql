@@ -11,7 +11,7 @@ Build with the [Meltano Target SDK](https://sdk.meltano.com).
 
 ## Installation
 
-Install from Meltano:
+<!-- Install from Meltano:
 ```bash
 meltano add loader target-mssql
 ```
@@ -20,12 +20,12 @@ Install from PyPi:
 
 ```bash
 pipx install target-mssql
-```
+``` -->
 
 Install from GitHub:
 
 ```bash
-pipx install git+https://github.com/storebrand/target-mssql.git@main
+pipx install git+https://github.com/somm-ms/target-mssql.git@main
 ```
 
 <!--
@@ -76,6 +76,7 @@ Regarding connection info, either the `sqlalchemy_url` or `username`, `password`
 | stream_map_config        | False    | None    | User-defined config values to be used within map expressions. |
 | flattening_enabled       | False    | None    | 'True' to enable schema flattening and automatically expand nested properties. |
 | flattening_max_depth     | False    | None    | The max depth to flatten schemas. |
+| fast_executemany     | False    | False    | This is the option added to the fork to enable faster insertion speeds. Requires usage of pyodbc and is highly unstable |
 
 
 A full list of supported settings and capabilities for this

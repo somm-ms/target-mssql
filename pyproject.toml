@@ -1,8 +1,7 @@
 [tool.poetry]
 name = "target-mssql"
 version = "0.2.2"
-description = "`target-mssql` is a Singer target for mssql, built with the Meltano SDK for Singer Targets.
-                Edit to enable fast inserts using pyodbc and fast_executemany. This is an unstable experimental option that should be used with caution"
+description = "`target-mssql` is a Singer target for mssql, built with the Meltano SDK for Singer Targets. Edit to enable fast inserts using pyodbc and fast_executemany. This is an unstable experimental option that should be used with caution"
 authors = ["Henning Holgersen"]
 keywords = [
     "ELT",
