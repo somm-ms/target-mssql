@@ -26,7 +26,7 @@ class mssqlConnector(SQLConnector):
         if 'pyodbc' in self.sqlalchemy_url and self.config.get("fast_executemany"):
             return sqlalchemy.create_engine(self.sqlalchemy_url, echo=False, fast_executemany=True)
         else:
-            return sqlalchemy.create_engine(self.sqlalchemy_url, echo=False, fast_executemany=True)
+            return sqlalchemy.create_engine(self.sqlalchemy_url, echo=False)
     
     allow_column_add: bool = True  # Whether ADD COLUMN is supported.
     allow_column_rename: bool = True  # Whether RENAME COLUMN is supported.

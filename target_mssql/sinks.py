@@ -154,9 +154,11 @@ class mssqlSink(SQLSink):
                 value = record.get(column.name)
                 
                 # Check if the value is a datetime object convert to english datetime string for fast_executemany
-                if self._config.get("fast_executemany") and isinstance(value, datetime):
-                    # Remove tzinfo by converting to a naive datetime
-                    value = value.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+                if self._config.get("fast_executemany"):
+                    if isinstance(value, datetime):
+                        # Remove tzinfo by converting to a naive datetime
+                        value = value.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+                    # place for other validations / corrections
 
                 # Add the processed value to the insert_record
                 insert_record[column.name] = value
