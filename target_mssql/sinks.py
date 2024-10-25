@@ -55,8 +55,17 @@ class mssqlSink(SQLSink):
         Returns:
             The target schema name.
         """
-
+        
         default_target_schema = self.config.get("default_target_schema", None)
+        
+        # Additional config to define the target schema_name based on the stream name that is processed
+        if "schema_mappings" in self.config.keys():
+            schema_mappings = {}
+            for e in self.config["schema_mappings"]:
+                schema_mappings.update(e) 
+            if self.stream_name in schema_mappings.keys():
+                return schema_mappings[self.stream_name]
+        
         parts = self.stream_name.split("-")
 
         if default_target_schema:

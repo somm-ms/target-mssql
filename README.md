@@ -77,7 +77,8 @@ Regarding connection info, either the `sqlalchemy_url` or `username`, `password`
 | flattening_enabled       | False    | None    | 'True' to enable schema flattening and automatically expand nested properties. |
 | flattening_max_depth     | False    | None    | The max depth to flatten schemas. |
 | fast_executemany     | False    | False    | This is the option added to the fork to enable faster insertion speeds. Requires usage of pyodbc and is highly unstable |
-
+| schema_mappings     | False    | False    | Must be done in the meltano.yml you can define a target schema based on the input stream_name. Under config add schema_mappings:
+      - *stream_name*: *target_schema_name*'|
 
 A full list of supported settings and capabilities for this
 target is available by running:
